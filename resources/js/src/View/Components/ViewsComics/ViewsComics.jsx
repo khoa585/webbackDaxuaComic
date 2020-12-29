@@ -14,18 +14,128 @@ import HomeIcon from "@material-ui/icons/Home";
 import EmojiObjectsIcon from "@material-ui/icons/EmojiObjects";
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 import "./style.scss";
-import TabControl from "./TabControl";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
+import { detialChapter } from '../../../api/chapter'
+import { timeToString } from '../../../Common/timeHelper'
+import BackToTop from '../Comon/BackToTop/BackToTop'
+import Loading from "../Comon/Loading";
+import TabControl from './TabControl'
 export default function ViewsComics() {
-    const [isAction, setAction] = React.useState(false);
-    const [isScrcoll, setScroll] = React.useState(false);
+    const { id } = useParams()
 
+    const [chapter, setData] = React.useState([])
+    React.useEffect(() => {
+        (async () => {
+            const result = await detialChapter(id);
+            if (result?.data?.status === "success") {
+                setData(result?.data?.data)
+            }
+        })()
+    }, [])
+    console.log(chapter)
+    let name = chapter.chapter?.name
+    const [isAction, setAction] = React.useState(false);
+    const [isScrcoll, setScroll] = React.useState(false)
+    const [chapter_, setChapter_] = React.useState(name);
+    const handleChange = (event) => {
+        setChapter_(event.target.value);
+
+        scroll_Top()
+    };
     let scroll_Top = () => {
         window.scrollTo({
             top: 0,
             behavior: "smooth"
         });
     }
+    let ShowChapter = () => {
+        return chapter.listChapters?.map((item) => {
+            return (
+                <MenuItem
+                    key={item._id}
+                // value={`/doc-truyen/${to_slug(chapter.chapter?.comic_id?.name)}-${to_slug(
+                //     item.name
+                // )}.${item._id}`}
+                >
+                    {item.name.slice(0, (item.name.indexOf(":") > 0 ? item.name.indexOf(":") : item.name.length))}
+                </MenuItem>
+            );
+        });
+    }
+    let onLight = () => {
+        setAction(!isAction)
+    }
+    const isShowButtonPreviews = () => {
+        let isShowPreview = false
+        chapter.listChapters?.forEach((item) => {
+            if (item.index < chapter.chapter?.index) {
+                isShowPreview = true;
+            }
+        });
+        return isShowPreview;
+    };
+
+    const isShowButtonNext = () => {
+        let isShowNext = false;
+        chapter.listChapters?.forEach((item) => {
+            if (item.index > chapter.chapter?.index) {
+                isShowNext = true;
+            }
+        });
+        return isShowNext;
+    };
+    const onNextChapter = () => {
+        let chapterNext;
+        chapter.listChapters?.forEach((item) => {
+            if (item.index == chapter.chapter?.index + 1) {
+                chapterNext = item;
+            }
+        });
+        if (chapterNext) {
+            setChapter_(chapterNext.name)
+            scroll_Top()
+        }
+    }
+    const onPreviewChapter = () => {
+        let chapterNext;
+        chapter.listChapters?.forEach((item) => {
+            if (item.index == chapter.chapter?.index - 1) {
+                chapterNext = item;
+            }
+        });
+        if (chapterNext) {
+            setChapter_(chapterNext.name)
+            scroll_Top()
+        }
+    }
+    const showOptionsSelect = () => {
+        return chapter.listChapters?.map((item) => {
+            return (
+                <Option
+                    key={item._id}
+                // value={`/doc-truyen/${to_slug(chapter.chapter?.comic_id?.name)}-${to_slug(
+                //     item.name
+                // )}.${item._id}`}
+                >
+                    {item.name}
+                </Option>
+            );
+        });
+    };
+    const ShowImages = () => {
+        return chapter.chapter?.images?.map((item, index) => {
+            return (
+                <div className="item" key={index}>
+                    <img
+                        className="img-fluid"
+                        src={item}
+                        alt="img"
+                    ></img>
+                </div>
+            );
+        });
+    };
+
     let handleScroll = () => {
         if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
             setScroll(true)
@@ -39,158 +149,141 @@ export default function ViewsComics() {
             document.removeEventListener("scroll", handleScroll)
         }
     })
+    React.useEffect(() => {
+
+    }, [chapter])
     let showSelected = () => {
         return <>
-            <Button className="icon_Pre" ><SkipPreviousIcon /> </Button>
+            {isShowButtonPreviews() ? <Button className="icon_Pre" onClick={onPreviewChapter}><SkipPreviousIcon /> </Button> : null}
             <FormControl>
                 <Select
-
+                    value={chapter_}
                     labelId="demo-mutiple-name-label"
                     id="demo-mutiple-name"
                     displayEmpty
-
+                    onChange={handleChange}
                 >
-                    <MenuItem>
-                        Tập 1
-                    </MenuItem>
-                    <MenuItem>
-                        Tập 2
-                    </MenuItem>
-                    <MenuItem>
-                        Tập 3
+                    <MenuItem value={chapter_}>
+                        <em>{name}</em>
                     </MenuItem>
                     {
                         ShowChapter()
                     }
                 </Select>
             </FormControl>
-            <Button className="icon_Next" ><SkipNextIcon /></Button>
+            {isShowButtonNext() ? <Button className="icon_Next" onClick={onNextChapter}><SkipNextIcon /></Button> : null}
 
         </>
-    }
-    let ShowChapter = () => {
-
-    }
-    const chapter = [
-        "http://vi.c.pic.mangatoon.mobi/ps/193958/watermark/1000/E.jpg",
-        "http://vi.c.pic.mangatoon.mobi/ps/193958/watermark/1000/s.jpg",
-        "http://vi.c.pic.mangatoon.mobi/ps/193958/watermark/1000/d.jpg",
-        "http://vi.c.pic.mangatoon.mobi/ps/193958/watermark/1000/E.jpg",
-        "http://vi.c.pic.mangatoon.mobi/ps/193958/watermark/1000/E.jpg",
-        "http://vi.c.pic.mangatoon.mobi/ps/193958/watermark/1000/E.jpg",
-        "http://vi.c.pic.mangatoon.mobi/ps/193958/watermark/1000/E.jpg",
-        "http://vi.c.pic.mangatoon.mobi/ps/193958/watermark/1000/E.jpg",
-        "http://vi.c.pic.mangatoon.mobi/ps/193958/watermark/1000/E.jpg",
-        "http://vi.c.pic.mangatoon.mobi/ps/193958/watermark/1000/E.jpg"
-    ]
-    const ShowImages = () => {
-        return chapter.map((item, index) => {
-            return (
-                <div className="item" key={index}>
-                    <img
-                        className="img-fluid"
-                        src={item}
-                        alt="img"
-                    ></img>
-                </div>
-            );
-        });
-    };
-    let onLight = () => {
-        setAction(!isAction)
     }
     return (
         <>
             <Header></Header>
-            <Container fluid className={`container_Comics_Read ${isAction ? "light" : "dark"}`}>
-                <div className="distant_Comics"></div>
-                <Container className="container_Read">
-                    <div className="reading-control">
-                        <div className="reading-control-top">
-                            <Breadcrumbs aria-label="breadcrumb">
-                                <Link to="/">Trang Chủ</Link>
-                                <a>Đọc Truyện</a>
-                                <a>Tiểu Thư Đỏng Đảnh</a>
-                                <span>Tập 1</span>
-                            </Breadcrumbs>
-                            <div className="information_Comic">
-                                <h5 className="detail-title">
-                                    Tiểu Thư Đỏng Đảnh
-                                </h5>
-                                <span>~&#160;Tập 1 </span>
-                                <span title="2018-07-14T06:13:49+07:00">
-                                    Cập nhật lúc: 222
-                                 </span>
-                            </div>
-                        </div>
-                        <div className="alert alert-info ">
-                            <NotificationsActiveIcon></NotificationsActiveIcon>&#160;
-                                <em>Sử dụng mũi tên trái (←) hoặc phải (→) để chuyển chapter</em>
-                        </div>
-                        <div className="chose-chap">
-                            <Button
-                                variant="contained"
-                                color="secondary"
-                                className="follow_Comics"
-
-                            >
-                                <HomeIcon className="icon"></HomeIcon>
-                            </Button>
-                            <Button
-                                variant="contained"
-                                color="secondary"
-                                className="follow_Comics"
-                            >
-                                <ErrorOutlineIcon></ErrorOutlineIcon>&#160;<span>Báo lỗi</span>
-                            </Button>
-                            <div className="select_Chap">
-                                {showSelected()}
-                            </div>
-                            <Button
-                                variant="contained"
-                                color="secondary"
-                                className="follow_Comics"
-
-                            >
-                                <BsHeart></BsHeart>&#160;Theo dõi
-                        </Button>
-                            {
-                                isAction ? <Button
-                                    variant="contained"
-                                    color="secondary"
-                                    className="follow_Comics"
-                                    onClick={() => { onLight() }}
-                                >
-                                    <EmojiObjectsIcon></EmojiObjectsIcon>&#160;Tắt Đèn
-                                 </Button>
-                                    :
+            {
+                chapter.length != 0 ?
+                    <Container fluid className={`container_Comics_Read ${isAction ? "light" : "dark"}`}>
+                        <div className="distant_Comics"></div>
+                        <Container className="container_Read">
+                            <div className="reading-control">
+                                <div className="reading-control-top">
+                                    <Breadcrumbs aria-label="breadcrumb">
+                                        {/* <Link to="/" >
+                                  <a>Trang Chủ</a>
+                              </Link>
+                              <Link as="/the-loai" href="/register">
+                                  <a>Đọc Truyện</a>
+                              </Link>
+                              <Link
+                                  to=""
+                              >
+                                  <a>{chapter.chapter?.comic_id?.name}</a>
+                              </Link> */}
+                                        <span>{chapter.chapter?.name}</span>
+                                    </Breadcrumbs>
+                                    <div className="information_Comic">
+                                        <h5 className="detail-title">
+                                            {/* <Link route="/register" >
+                                      <a>{chapter.chapter?.comic_id?.name}</a>
+                                  </Link>{" "} */}
+                                        </h5>
+                                        <span>~&#160;{chapter.chapter?.name}</span>
+                                        <span title="2018-07-14T06:13:49+07:00">
+                                            (Cập nhật lúc: {timeToString(chapter.chapter?.createdAt)})
+                           </span>
+                                    </div>
+                                </div>
+                                <div className="alert alert-info ">
+                                    <NotificationsActiveIcon></NotificationsActiveIcon>&#160;
+                          <em>Sử dụng mũi tên trái (←) hoặc phải (→) để chuyển chapter</em>
+                                </div>
+                                <div className="chose-chap">
                                     <Button
                                         variant="contained"
                                         color="secondary"
                                         className="follow_Comics"
-                                        onClick={() => { onLight() }}
+
                                     >
-                                        <EmojiObjectsIcon></EmojiObjectsIcon>&#160;Bật Đèn
+                                        <HomeIcon className="icon"></HomeIcon>
                                     </Button>
-                            }
+                                    <Button
+                                        variant="contained"
+                                        color="secondary"
+                                        className="follow_Comics"
+                                    >
+                                        <ErrorOutlineIcon></ErrorOutlineIcon>&#160;<span>Báo lỗi</span>
+                                    </Button>
+                                    <div className="select_Chap">
+                                        {showSelected()}
+                                    </div>
+                                    <Button
+                                        variant="contained"
+                                        color="secondary"
+                                        className="follow_Comics"
 
-                        </div>
-                    </div>
-                    <div className="reading-detail box_doc">
-                        {ShowImages()}
-                    </div>
-                </Container>
-                {
-                    isScrcoll ? <Container fluid className={`tab ${isAction ? "tabdark" : "tablight"}`}>
-                        <Container>
-                            <TabControl isAction={isAction} showSelected={showSelected} ShowChapter={ShowChapter} onLight={onLight}></TabControl>
+                                    >
+                                        <BsHeart></BsHeart>&#160;Theo dõi
+                  </Button>
+                                    {
+                                        isAction ? <Button
+                                            variant="contained"
+                                            color="secondary"
+                                            className="follow_Comics"
+                                            onClick={() => { onLight() }}
+                                        >
+                                            <EmojiObjectsIcon></EmojiObjectsIcon>&#160;Tắt Đèn
+                           </Button>
+                                            :
+                                            <Button
+                                                variant="contained"
+                                                color="secondary"
+                                                className="follow_Comics"
+                                                onClick={() => { onLight() }}
+                                            >
+                                                <EmojiObjectsIcon></EmojiObjectsIcon>&#160;Bật Đèn
+                              </Button>
+                                    }
+
+                                </div>
+                            </div>
+                            <div className="reading-detail box_doc">
+                                {ShowImages()}
+                            </div>
                         </Container>
-                    </Container>
-                        :
-                        null
-                }
-            </Container>
+                        {
+                            isScrcoll ? <Container fluid className={`tab ${isAction ? "tabdark" : "tablight"}`}>
+                                <Container>
+                                    <TabControl isAction={isAction} showSelected={showSelected} ShowChapter={ShowChapter} onPreviewChapter={onPreviewChapter} onNextChapter={onNextChapter} chapter={chapter} onLight={onLight} showOptionsSelect={showOptionsSelect}></TabControl>
+                                </Container>
+                            </Container>
+                                :
+                                null
+                        }
+                    </Container> :
+                    <div style={{ height: '100vh', alignItems: 'center', justifyContent: 'center', display: 'flex' }}>
+                        <Loading></Loading>
+                    </div>
 
+            }
+            <BackToTop></BackToTop>
         </>
     );
 }

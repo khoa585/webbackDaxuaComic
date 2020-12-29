@@ -32,6 +32,7 @@ export default React.memo(function ShowComics({ props, data, numberOfResult, pag
                     key={item._id}
                     image={item.image}
                     alt={item.name}
+                    id={item._id}
                     chapters={item.chapters}
                     views={item.views}
                   />

@@ -2,19 +2,17 @@ import React from "react";
 import { Col } from "react-bootstrap";
 import { BsFillEyeFill, BsFillHeartFill } from "react-icons/bs";
 import { Link } from "react-router-dom";
-import { format } from './../../../../../Comman/FortmatView'
+import { format } from '../../../../../Common/FortmatView'
+import { to_slug } from '../../../../../Common/stringHelper'
 import "./ImageItem.scss";
-const ImageItem = ({ image, alt, views, like, title }) => {
+const ImageItem = ({ image, alt, views, like, title,id }) => {
 
   return (
     <Col lg={3} className="my-3" md={4} sm={6} xs={6}>
       <div className="item_Store">
-        <span>
-
+        <Link to={`/truyen-tranh/${to_slug(title)}/${id}`}>
           <div className="image">
-            <Link to="/detail">
               <img className="img-fluid" src={image} alt={alt} />
-            </Link>
             <div className="follow_View_Store">
               <span>
                 <BsFillEyeFill />
@@ -30,7 +28,7 @@ const ImageItem = ({ image, alt, views, like, title }) => {
             </div>
           </div>
 
-        </span>
+        </Link>
         <div className="title_Item">
           <span className="jtip" data-jtip="#truyen-tranh-9929">
 

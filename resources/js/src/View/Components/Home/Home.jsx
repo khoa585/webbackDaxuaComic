@@ -9,9 +9,9 @@ import ViewComics from "./components/ViewComics/VisitedComics/ViewComics";
 import Comment from "./components/Comment/Comment";
 import Footer from "../Footer";
 import BackToTop from "../Comon/BackToTop/BackToTop";
-import TopComics from "../TopComics/TopComics";
 import { Link, Route, useHistory } from "react-router-dom";
 import { getListComic } from '../../../api/comic'
+import TopComics from "../TopComics/TopComics";
 const Home = (props) => {
   const [data, setData] = React.useState({ data: [], numberOfResult: 0 })
   let [page, setPage] = React.useState(1)

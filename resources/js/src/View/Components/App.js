@@ -20,13 +20,13 @@ function App() {
         <Route path="/" exact>
           <Home></Home>
         </Route>
-        <Route path="/detail" >
+        <Route path="/truyen-tranh/:slug/:id" >
           <DetailedStory></DetailedStory>
         </Route>
         <Route path="/login" >
           <Login></Login>
         </Route>
-        <Route path="/seen" >
+        <Route path="/doc-truyen/:slug/:slug/:id" >
           <ViewsComics></ViewsComics>
         </Route>
         <Route path="/sign-up">
