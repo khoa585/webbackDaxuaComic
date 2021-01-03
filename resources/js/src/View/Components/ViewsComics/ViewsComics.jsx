@@ -14,33 +14,39 @@ import HomeIcon from "@material-ui/icons/Home";
 import EmojiObjectsIcon from "@material-ui/icons/EmojiObjects";
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 import "./style.scss";
-import { Link, useParams } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import { detialChapter } from '../../../api/chapter'
 import { timeToString } from '../../../Common/timeHelper'
 import BackToTop from '../Comon/BackToTop/BackToTop'
 import Loading from "../Comon/Loading";
 import TabControl from './TabControl'
+import { to_slug } from '../../../Common/stringHelper'
 export default function ViewsComics() {
-    const { id } = useParams()
 
+    const { id } = useParams()
+    let history = useHistory();
     const [chapter, setData] = React.useState([])
+    const [id_, setId_] = React.useState(id)
+    const [isAction, setAction] = React.useState(false);
+    const [isScrcoll, setScroll] = React.useState(false)
+    let name = chapter.chapter?.name
+    const [chapter_, setChapter_] = React.useState(name);
     React.useEffect(() => {
         (async () => {
-            const result = await detialChapter(id);
+            const result = await detialChapter(id_);
             if (result?.data?.status === "success") {
                 setData(result?.data?.data)
             }
-        })()
-    }, [])
-    console.log(chapter)
-    let name = chapter.chapter?.name
-    const [isAction, setAction] = React.useState(false);
-    const [isScrcoll, setScroll] = React.useState(false)
-    const [chapter_, setChapter_] = React.useState(name);
-    const handleChange = (event) => {
-        setChapter_(event.target.value);
 
+        })()
+    }, [id_])
+
+
+    const handleChange = (event) => {
+        setId_(event.target.value.split(new RegExp(".+/"))[1])
+        setChapter_(event.target.value);
         scroll_Top()
+        history.push(event.target.value)
     };
     let scroll_Top = () => {
         window.scrollTo({
@@ -53,11 +59,9 @@ export default function ViewsComics() {
             return (
                 <MenuItem
                     key={item._id}
-                // value={`/doc-truyen/${to_slug(chapter.chapter?.comic_id?.name)}-${to_slug(
-                //     item.name
-                // )}.${item._id}`}
+                    value={`/doc-truyen/${to_slug(chapter.chapter?.comic_id?.name)}/${to_slug(item.name)}/${item._id}`}
                 >
-                    {item.name.slice(0, (item.name.indexOf(":") > 0 ? item.name.indexOf(":") : item.name.length))}
+                    {item.name}
                 </MenuItem>
             );
         });
@@ -68,7 +72,7 @@ export default function ViewsComics() {
     const isShowButtonPreviews = () => {
         let isShowPreview = false
         chapter.listChapters?.forEach((item) => {
-            if (item.index < chapter.chapter?.index) {
+            if (item.index > chapter.chapter?.index) {
                 isShowPreview = true;
             }
         });
@@ -78,7 +82,7 @@ export default function ViewsComics() {
     const isShowButtonNext = () => {
         let isShowNext = false;
         chapter.listChapters?.forEach((item) => {
-            if (item.index > chapter.chapter?.index) {
+            if (item.index < chapter.chapter?.index) {
                 isShowNext = true;
             }
         });
@@ -87,24 +91,30 @@ export default function ViewsComics() {
     const onNextChapter = () => {
         let chapterNext;
         chapter.listChapters?.forEach((item) => {
-            if (item.index == chapter.chapter?.index + 1) {
+            if (item.index == chapter.chapter?.index - 1) {
                 chapterNext = item;
             }
         });
+
         if (chapterNext) {
+            setId_(chapterNext._id)
             setChapter_(chapterNext.name)
+            history.push(`/doc-truyen/${to_slug(chapter.chapter?.comic_id?.name)}/${to_slug(chapterNext.name)}/${chapterNext._id}`);
             scroll_Top()
         }
     }
     const onPreviewChapter = () => {
         let chapterNext;
         chapter.listChapters?.forEach((item) => {
-            if (item.index == chapter.chapter?.index - 1) {
+            if (item.index == chapter.chapter?.index + 1) {
                 chapterNext = item;
             }
         });
         if (chapterNext) {
+            setId_(chapterNext._id)
             setChapter_(chapterNext.name)
+
+            history.push(`/doc-truyen/${to_slug(chapter.chapter?.comic_id?.name)}/${to_slug(chapterNext.name)}/${chapterNext._id}`);
             scroll_Top()
         }
     }
@@ -113,9 +123,7 @@ export default function ViewsComics() {
             return (
                 <Option
                     key={item._id}
-                // value={`/doc-truyen/${to_slug(chapter.chapter?.comic_id?.name)}-${to_slug(
-                //     item.name
-                // )}.${item._id}`}
+                    value={`/doc-truyen/${to_slug(chapter.chapter?.comic_id?.name)}/${to_slug(item.name)}/${item._id}`}
                 >
                     {item.name}
                 </Option>
@@ -149,21 +157,41 @@ export default function ViewsComics() {
             document.removeEventListener("scroll", handleScroll)
         }
     })
+    const findProduct = (data, id) => {
+        return data.findIndex((f) => f.comic_id._id === id)
+    }
+
     React.useEffect(() => {
+        let history = localStorage.getItem("truyenmoi_history");
+        let sethistory = history === null ? [] : JSON.parse(history)
+        let newChapter = chapter?.chapter
+
+        if (newChapter?.comic_id?._id != 'undefined' && chapter.length != 0) {
+
+            let index = findProduct(sethistory, newChapter?.comic_id?._id)
+
+            if (index === -1) {
+                sethistory.push(newChapter)
+                localStorage.setItem("truyenmoi_history", JSON.stringify(sethistory));
+            }
+        }
 
     }, [chapter])
+
     let showSelected = () => {
         return <>
             {isShowButtonPreviews() ? <Button className="icon_Pre" onClick={onPreviewChapter}><SkipPreviousIcon /> </Button> : null}
             <FormControl>
                 <Select
-                    value={chapter_}
+                    value={chapter_ ? chapter_ : ''}
                     labelId="demo-mutiple-name-label"
                     id="demo-mutiple-name"
                     displayEmpty
                     onChange={handleChange}
                 >
-                    <MenuItem value={chapter_}>
+                    <MenuItem
+                        value={chapter_ ? chapter_ : ''}
+                    >
                         <em>{name}</em>
                     </MenuItem>
                     {
