@@ -1,18 +1,13 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import App from './Components/App';
 
-function Example() {
+function App() {
     return (
-        <>
-            <App></App>
-        </>
+        <div>Hi</div>
     );
 }
 
-export default Example;
+export default App;
 
 if (document.getElementById('example')) {
-    ReactDOM.render(<Example />, document.getElementById('example'));
+    ReactDOM.render(<App />, document.getElementById('example'));
 }

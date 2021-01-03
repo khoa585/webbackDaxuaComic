@@ -6,7 +6,7 @@ class ApiHelper{
     public static function createApiHelper($is_error,$code,$message,$content){
         $result = [];
         if($is_error){
-            $result['success'] = false;
+            $result['error'] = true;
             $result['code'] = $code;
             $result['message'] = $message;
         }else{

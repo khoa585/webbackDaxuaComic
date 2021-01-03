@@ -17,4 +17,21 @@ use App\Http\Controllers\Comic\listComic;
 Route::get('/', function () {
     return view('welcome');
 });
+
+// Route::get('/{url?}', function () {
+//     return view('welcome');
+// })->where('any', '.*');
+
+// Route::get('/{any}', function () {
+//     return view('welcome');
+// })->where('any', '.*');
+
+// Route::get('/{url?}', function () {
+//     return view('welcome');
+// })->where('', 'sign-up');
+
+// Route::get({any}, function () {
+//     return view('welcome'); 
+// })->where('any', '.*');
+
 Route::get('get-list', [listComic::class, 'show']);
