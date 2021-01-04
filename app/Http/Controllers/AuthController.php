@@ -96,7 +96,8 @@ class AuthController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function userProfile() {
-        return response()->json(auth()->user());
+        $response = ApiHelper::createApiHelper(false,200,"",auth()->user(),);
+        return response()->json($response,200);
     }
 
     /**
