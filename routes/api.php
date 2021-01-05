@@ -42,6 +42,6 @@ Route::group([
     'prefix' => 'cmt'
 ], function ($router) {
     Route::post('/create', [ApiCmtController::class, 'createComment']);
-    Route::get('/getCommentsByComic', [ApiCmtController::class, 'getCommentsByComic']);
+    Route::get('/getCommentsByComic/{id}', [ApiCmtController::class, 'getCommentsByComic']);
     Route::post('/reply/create', [ApiCmtController::class, 'RepComment']);
 });
