@@ -33,6 +33,7 @@ Route::group([
     'prefix' => 'cart'
 ], function ($router) {
     Route::get('/show', [cartController::class, 'show']);
+    Route::get('/getlistbuysid/{id}', [cartController::class, 'getlistbuysid']);
     Route::post('/add/{id}', [cartController::class, 'add']);
     Route::put('/update/{id}', [cartController::class, 'update']);
 });

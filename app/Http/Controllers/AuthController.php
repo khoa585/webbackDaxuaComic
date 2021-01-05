@@ -35,7 +35,7 @@ class AuthController extends Controller
         }
         if (! $token = auth()->attempt($validator->validated())) {
           
-            $response = ApiHelper::createApiHelper(true,200,"Unauthorized","");
+            $response = ApiHelper::createApiHelper(false,200,"Unauthorized","");
             return response()->json($response,200);
         }
         return $this->createNewToken($token);
@@ -96,7 +96,7 @@ class AuthController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function userProfile() {
-        $response = ApiHelper::createApiHelper(false,200,"",auth()->user(),);
+        $response = ApiHelper::createApiHelper(false,200,"",auth()->user());
         return response()->json($response,200);
     }
 

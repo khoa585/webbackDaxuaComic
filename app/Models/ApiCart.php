@@ -9,5 +9,5 @@ class ApiCart extends Model
 {
     use HasFactory;
     protected $table='cart';
-    protected $fillable = ['user','email','comicId','ngayHetHanThue','image','Views','nameComic'];
+    protected $fillable = ['user','email','comicId','ngayHetHanThue','image','Views','nameComic','price'];
 }

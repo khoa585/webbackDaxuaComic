@@ -22,6 +22,7 @@ class CreateCartTable extends Migration
             $table->string('nameComic');
             $table->string('Views');
             $table->string('image');
+            $table->int('price');
             $table->string('ngayHetHanThue');
         });
     }

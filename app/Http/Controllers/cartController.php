@@ -9,16 +9,32 @@ use Carbon\Carbon;
 use DB;
 class cartController extends Controller
 {
+    public function __construct() {
+        $this->middleware('auth:api', ['except' => ['login', 'register']]);
+    }
+
+
     public function show(Request $request)
     {
-        $results = ApiCart::all();
-        
-        $response = ApiHelper::createApiHelper(false,200,"",$results);
-        return response()->json($response,200);
+        $cart = ApiCart::where('user',auth()->user()->id)->get();
+        $response = ApiHelper::createApiHelper(false,200,"",$cart);
+        return response()->json( $response,200);
+    }
+    public function getlistbuysid(Request $request, $id)
+    {
+        $cart = ApiCart::firstWhere([
+            ['user','=',auth()->user()->id],
+            ['comicId','=',$id]
+        ]);
+        $response = ApiHelper::createApiHelper(false,200,"",$cart);
+        return response()->json( $response,200);
     }
     public function add(Request $request, $id)
     {
-        $cart =  ApiCart::firstWhere('comicId', $id);
+        $cart = ApiCart::firstWhere([
+            ['user','=',auth()->user()->id],
+            ['comicId','=',$id]
+        ]);
         $currentDateTime = Carbon::now();
         $newDateTime = Carbon::now()->addDay(30);
         if($cart == ""){
@@ -30,9 +46,11 @@ class cartController extends Controller
                 $cart->image = $request->input('image');
                 $cart->Views = $request->input('Views');
                 $cart->nameComic = $request->input('nameComic');
+                $cart->price = $request->input('price');
                 $cart->save();
         }else{
             $cart = ApiCart::find($cart->id);
+            $cart->price = $cart->price + $request->input('price');
             $cart->ngayHetHanThue = Carbon::parse($cart->ngayHetHanThue)->addDay(30);
             $cart->save();
         }
