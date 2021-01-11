@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use App\Helper\ApiHelper;
 use App\Models\ModelCmt;
-use App\Models\rep;
+use App\Models\Rep;
 use Illuminate\Support\Collection;
 use DB;
 class ApiCmtController extends Controller
@@ -23,7 +23,7 @@ class ApiCmtController extends Controller
     }
     public function RepComment(Request $request)
     {
-        $cmts = new rep();
+        $cmts = new Rep();
         $cmts->content = $request->input('content');
         $cmts->IDuserReplies= $request->input('IDuserReplies');
         $cmts->IDCmt = $request->input('IDCmt');
@@ -35,7 +35,7 @@ class ApiCmtController extends Controller
     {
         $results = ModelCmt::getlist($id);
         foreach ($results as $items){ 
-          $items->reply =ModelCmt::getReplist($items->id);
+          $items->reply =Rep::getReplist($items->id);
         }
          $response = ApiHelper::createApiHelper(false,200,"",$results);
          return response()->json($response,200);

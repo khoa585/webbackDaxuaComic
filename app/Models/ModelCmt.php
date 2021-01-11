@@ -17,12 +17,5 @@ class ModelCmt extends Model
         ->where('cmts.Idcomic', $id)
         ->get();
     }
-    public static function getReplist($id){
-        return  DB::table('rep')
-        ->leftJoin('users', 'rep.IDuserReplies', '=', 'users.id')
-        ->leftJoin('cmts', 'rep.IDCmt', '=', 'cmts.id')
-        ->select('cmts.id','cmts.content','users.name')
-        ->where('cmts.id', $id)
-        ->get();
-    }
+  
 }
